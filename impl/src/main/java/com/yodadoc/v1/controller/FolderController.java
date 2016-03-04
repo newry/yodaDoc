@@ -8,6 +8,9 @@ import java.util.TimeZone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -36,8 +39,10 @@ public class FolderController {
 	private DocumentRepository docRepository;
 
 	@RequestMapping(value = "/folder/v1/listFolder", method = RequestMethod.POST)
+	@PreAuthorize("hasRole('USER')")
 	public FolderResponse list(@RequestBody FolderRequest folderRequest) {
-		LOG.info("folderRequest={}", folderRequest);
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		LOG.info("folderRequest={}, user={}", folderRequest, authentication.getName());
 		Parameters params = folderRequest.getParams();
 		Long folderId = params.getFolderId();
 		FolderResponse response = new FolderResponse();
@@ -76,7 +81,10 @@ public class FolderController {
 	}
 
 	@RequestMapping(value = "/folder/v1/rename", method = RequestMethod.POST)
+	@PreAuthorize("hasRole('USER')")
 	public OperationResponse rename(@RequestBody UpdateRequest updateRequest) {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		LOG.info("updateRequest={}, user={}", updateRequest, authentication.getName());
 		OperationResponse response = new OperationResponse();
 		UpdateParameters params = updateRequest.getParams();
 		Long id = params.getId();

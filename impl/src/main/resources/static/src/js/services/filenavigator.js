@@ -1,10 +1,8 @@
 (function(angular) {
     'use strict';
     angular.module('FileManagerApp').service('fileNavigator', [
-        '$http', '$q', 'fileManagerConfig', 'item', function ($http, $q, fileManagerConfig, Item) {
-
+        '$http', '$q', 'fileManagerConfig', 'item','$cookies', function ($http, $q, fileManagerConfig, Item, $cookies) {
         $http.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
-
         var FileNavigator = function() {
             this.requesting = false;
             this.fileList = [];
@@ -41,15 +39,37 @@
                 onlyFolders: onlyFolders,
                 folderId: realFolderId
             }};
+	    	var req = {
+	    			method : 'POST',
+					url : fileManagerConfig.listUrl,
+					data : data
+				};    	
+    		var user = $cookies.loginedUser;
+    		if(user!=null){
+    			user = eval(user);
+    			if(user!=null){
+    				req = {
+    		    			method : 'POST',
+    						url : fileManagerConfig.listUrl,
+    						headers : {
+    							'Authorization' : user.token_type+" "+user.access_token
+    						},
+    						data : data
+    					};      				
+    			}
+            }
 
             self.requesting = true;
             self.fileList = [];
             self.error = '';
-
-            $http.post(fileManagerConfig.listUrl, data).success(function(data) {
+	    	$http(req).success(function(data) {
                 self.deferredHandler(data, deferred);
-            }).error(function(data) {
-                self.deferredHandler(data, deferred, 'Unknown error listing, check the response');
+            }).error(function(data, status) {
+            	if(status===401){
+            		self.deferredHandler({}, deferred, 'Please login First!');
+            	}else{
+            		self.deferredHandler(data, deferred, 'Error during get folders');
+            	}
             })['finally'](function() {
                 self.requesting = false;
             });

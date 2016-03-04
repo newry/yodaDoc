@@ -35,9 +35,9 @@
         <h4 class="modal-title">{{"Login" | translate}}</h4>
       </div>
       <div class="modal-body">
-      	{{"User Name" | translate}}: <input id="username" type="text" ng-model="tempUser.name"/><br/>
-      	{{"Password" | translate}}:<input id="password" type="password" ng-model="tempUser.password"/>
-        <div ng-include data-src="'error-bar'" class="clearfix"></div>
+      	{{"User Name" | translate}}: <input id="username" type="text" ng-model="tempUser.name" required="" /><br/>
+      	{{"Password" | translate}}:<input id="password" type="password" ng-model="tempUser.password" required="" />
+        <div ng-include data-src="'error-bar'" class="clearfix">{{tempUser.error}}</div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal" ng-disabled="temp.inprocess">{{"cancel" | translate}}</button>

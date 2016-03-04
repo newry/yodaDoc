@@ -81,8 +81,12 @@
             self.error = '';
             $http.post(fileManagerConfig.createFolderUrl, data).success(function(data) {
                 self.deferredHandler(data, deferred);
-            }).error(function(data) {
-                self.deferredHandler(data, deferred, $translate.instant('error_creating_folder'));
+            }).error(function(data, status) {
+            	if(status===401){
+            		self.deferredHandler({}, deferred, 'Please login First!');
+            	}else{
+            		self.deferredHandler(data, deferred, $translate.instant('error_creating_folder'));
+            	}
             })['finally'](function() {
                 self.inprocess = false;
             });
@@ -108,8 +112,12 @@
             self.error = '';
             $http.post(fileManagerConfig.renameUrl, data).success(function(data) {
                 self.deferredHandler(data, deferred);
-            }).error(function(data) {
-                self.deferredHandler(data, deferred, $translate.instant('error_renaming'));
+            }).error(function(data, status) {
+            	if(status===401){
+            		self.deferredHandler({}, deferred, 'Please login First!');
+            	}else{
+                    self.deferredHandler(data, deferred, $translate.instant('error_renaming'));
+            	}
             })['finally'](function() {
                 self.inprocess = false;
             });
@@ -129,14 +137,18 @@
             self.error = '';
             $http.post(fileManagerConfig.copyUrl, data).success(function(data) {
                 self.deferredHandler(data, deferred);
-            }).error(function(data) {
-                self.deferredHandler(data, deferred, $translate.instant('error_copying'));
+            }).error(function(data, status) {
+            	if(status===401){
+            		self.deferredHandler({}, deferred, 'Please login First!');
+            	}else{
+                    self.deferredHandler(data, deferred, $translate.instant('error_copying'));
+            	}
             })['finally'](function() {
                 self.inprocess = false;
             });
             return deferred.promise;
         };
-
+        /*
         Item.prototype.compress = function() {
             var self = this;
             var deferred = $q.defer();
@@ -179,7 +191,7 @@
             });
             return deferred.promise;
         };
-
+	*/
         Item.prototype.getUrl = function(preview) {
             var path = this.model.fullPath();
             var data = {
@@ -197,6 +209,7 @@
             }
         };
 
+        /*
         Item.prototype.getContent = function() {
             var self = this;
             var deferred = $q.defer();
@@ -217,7 +230,7 @@
             });
             return deferred.promise;
         };
-		
+		*/
         Item.prototype.getHistory = function() {
             var self = this;
             var deferred = $q.defer();
@@ -232,8 +245,12 @@
                 self.tempModel.historyList = self.model.historyList = data.result;
 				console.log(self.tempModel.historyList);
                 self.deferredHandler(data, deferred);
-            }).error(function(data) {
-                self.deferredHandler(data, deferred, $translate.instant('error_getting_History'));
+            }).error(function(data, status) {
+            	if(status===401){
+            		self.deferredHandler({}, deferred, 'Please login First!');
+            	}else{
+                    self.deferredHandler(data, deferred, $translate.instant('error_getting_History'));
+            	}
             })['finally'](function() {
                 self.inprocess = false;
             });
@@ -253,8 +270,12 @@
             self.error = '';
             $http.post(fileManagerConfig.removeUrl, data).success(function(data) {
                 self.deferredHandler(data, deferred);
-            }).error(function(data) {
-                self.deferredHandler(data, deferred, $translate.instant('error_deleting'));
+            }).error(function(data, status) {
+            	if(status===401){
+            		self.deferredHandler({}, deferred, 'Please login First!');
+            	}else{
+            		self.deferredHandler(data, deferred, $translate.instant('error_deleting'));
+            	}
             })['finally'](function() {
                 self.inprocess = false;
             });
@@ -283,6 +304,7 @@
             return deferred.promise;
         };
 
+        /*
         Item.prototype.changePermissions = function() {
             var self = this;
             var deferred = $q.defer();
@@ -305,7 +327,7 @@
             });
             return deferred.promise;
         };
-		
+		*/
         Item.prototype.checkout = function() {
             var self = this;
             var deferred = $q.defer();

@@ -7,6 +7,7 @@
             defaultLang: 'en',
             enablePermissions: false,
 
+            loginUrl: 'login',
             listUrl: 'folder/v1/listFolder',
             uploadUrl: 'download',
             renameUrl: 'folder/v1/rename',

@@ -16,8 +16,8 @@
 		}
 	});
     fileManagerApp.controller('FileManagerCtrl', [
-        '$scope', '$translate', '$cookies', 'fileManagerConfig', 'item', 'fileNavigator', 'fileUploader', 'auth',
-      function($scope, $translate, $cookies, fileManagerConfig, Item, FileNavigator, FileUploader, auth) {
+        '$scope', '$translate', '$cookies', 'fileManagerConfig', 'item', 'fileNavigator', 'fileUploader', 'auth', '$http',
+      function($scope, $translate, $cookies, fileManagerConfig, Item, FileNavigator, FileUploader, auth, $http) {
         $scope.config = fileManagerConfig;
         $scope.reverse = false;
         $scope.predicate = ['model.type', 'model.name'];        
@@ -35,23 +35,44 @@
         $scope.uploadFileList = [];
         $scope.viewTemplate = $cookies.viewTemplate || 'main-table.html';
 
-        $scope.setTemplate = function(name) {
-            $scope.viewTemplate = $cookies.viewTemplate = name;
-        };
+//        $scope.setTemplate = function(name) {
+//            $scope.viewTemplate = $cookies.viewTemplate = name;
+//        };
 
-        $scope.changeLanguage = function (locale) {
-            if (locale) {
-                return $translate.use($cookies.language = locale);
-            }
-            $translate.use($cookies.language || fileManagerConfig.defaultLang);
-        };
+//        $scope.changeLanguage = function (locale) {
+//            if (locale) {
+//                return $translate.use($cookies.language = locale);
+//            }
+//            $translate.use($cookies.language || fileManagerConfig.defaultLang);
+//        };
+        
 	    $scope.logout = function() {
 	    	auth.setUser(null);
+			$cookies.loginedUser = '';
+            $scope.fileNavigator.refresh();
 	    };
 	    $scope.loginUser = function(user) {
-			auth.setUser(user);
-	        $scope.tempUser = {};
-            $scope.modal('login', true);
+	    	var req = {
+	    			method : 'POST',
+					url : fileManagerConfig.loginUrl,
+					headers : {
+						'Content-Type' : 'application/x-www-form-urlencoded'
+					},
+					data : 'user=' + user.name + "&password=" + user.password
+				};    	
+            $http(req).success(function(data) {
+            	var loginedUser = {user:user.name, token_type:data.token_type, access_token:data.access_token};
+    			auth.setUser(loginedUser);
+    			$cookies.loginedUser = loginedUser.toSource();
+    	        $scope.tempUser = {};
+                $scope.modal('login', true);
+                $scope.fileNavigator.refresh();
+            }).error(function(data, status) {
+    			auth.setUser(null);
+    			$cookies.loginedUser = null;
+            	$scope.tempUser.error="Cannot login";
+            });
+	    	
 		};
 
         $scope.touch = function(item) {
@@ -234,8 +255,11 @@
             return found;
         };
 
-        $scope.changeLanguage($scope.getQueryParam('lang'));
+        //$scope.changeLanguage($scope.getQueryParam('lang'));
         $scope.isWindows = $scope.getQueryParam('server') === 'Windows';
+        if($cookies.loginedUser!=null){
+        	$scope.auth.setUser(eval($cookies.loginedUser));
+        }
         $scope.fileNavigator.refresh();
     }]);
 })(window, angular, jQuery);

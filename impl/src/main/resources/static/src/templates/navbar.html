@@ -12,7 +12,7 @@
     <div id="navbar" class="navbar-collapse collapse">
       <div class="navbar-form navbar-right">
 		<span class="user-info" ng-show="auth.isLoggedIn()">
-		    <small>Welcome,</small>{{auth.getUser().name}}
+		    <small>Welcome,</small>{{auth.getUser().user}}
 		</span>
         <button class="btn btn-default btn-sm" ng-click="logout()" ng-show="auth.isLoggedIn()">
             <i class="glyphicon glyphicon-plus"></i> {{"logout" | translate}}
