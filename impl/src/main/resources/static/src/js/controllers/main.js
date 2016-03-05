@@ -63,7 +63,7 @@
             $http(req).success(function(data) {
             	var loginedUser = {user:user.name, token_type:data.token_type, access_token:data.access_token};
     			auth.setUser(loginedUser);
-    			$cookies.loginedUser = loginedUser.toSource();
+    			$cookies.loginedUser = JSON.stringify(loginedUser);
     	        $scope.tempUser = {};
                 $scope.modal('login', true);
                 $scope.fileNavigator.refresh();
