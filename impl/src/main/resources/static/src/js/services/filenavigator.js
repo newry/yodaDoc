@@ -1,7 +1,7 @@
 (function(angular) {
     'use strict';
     angular.module('FileManagerApp').service('fileNavigator', [
-        '$http', '$q', 'fileManagerConfig', 'item','$cookies', function ($http, $q, fileManagerConfig, Item, $cookies) {
+        '$http', '$q', 'fileManagerConfig', 'item','$cookies', 'auth', function ($http, $q, fileManagerConfig, Item, $cookies,auth) {
         $http.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
         var FileNavigator = function() {
             this.requesting = false;
@@ -44,10 +44,8 @@
 					url : fileManagerConfig.listUrl,
 					data : data
 				};    	
-    		var user = $cookies.loginedUser;
+    		var user = auth.getUser();
     		if(user!=null){
-    			user = eval(user);
-    			if(user!=null){
     				req = {
     		    			method : 'POST',
     						url : fileManagerConfig.listUrl,
@@ -56,7 +54,6 @@
     						},
     						data : data
     					};      				
-    			}
             }
 
             self.requesting = true;
@@ -66,6 +63,8 @@
                 self.deferredHandler(data, deferred);
             }).error(function(data, status) {
             	if(status===401){
+        	    	auth.setUser(null);
+        			$cookies.loginedUser = '';
             		self.deferredHandler({}, deferred, 'Please login First!');
             	}else{
             		self.deferredHandler(data, deferred, 'Error during get folders');
